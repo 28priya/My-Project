@@ -1,7 +1,7 @@
 // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './Components/Home';
+import Home from './Components/home';
 import Login from './Components/Login';
 import Signup from './Components/Signup';
 import DietPlan from './Components/DietPlan';

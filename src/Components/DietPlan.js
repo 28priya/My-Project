@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import '../css/DietPlan.css';
 
 const DietPlan = () => {
@@ -18,18 +17,64 @@ const DietPlan = () => {
     { name: 'The Ultra-Low-Fat Diet', link: 'https://www.medindia.net/health/diet-and-nutrition/ultra-low-fat-diet.htm' },
   ];
 
+  // Calculate the size of each quarter
+  const quarterIndex = Math.ceil(dietPlans.length / 4);
+  const firstQuarter = dietPlans.slice(0, quarterIndex);
+  const secondQuarter = dietPlans.slice(quarterIndex, quarterIndex * 2);
+  const thirdQuarter = dietPlans.slice(quarterIndex * 2, quarterIndex * 3);
+  const fourthQuarter = dietPlans.slice(quarterIndex * 3);
+
   return (
     <div className="diet-plan-container">
       <div className="container mx-auto pt-16">
         <h1 className="text-4xl font-bold mb-8 text-white">Diet Plans</h1>
+
         <div className="diet-plan-list">
-          {dietPlans.map((plan, index) => (
-            <div key={index} className="diet-plan-item">
-              <a href={plan.link} target="_blank" rel="noopener noreferrer">
-                <h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
-              </a>
-            </div>
-          ))}
+          <div className="diet-plan-row">
+            {firstQuarter.map((plan, index) => (
+              <div key={index} className="diet-plan-item">
+                <a href={plan.link} target="_blank" rel="noopener noreferrer">
+                  <h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
+                </a>
+              </div>
+            ))}
+          </div>
+
+          <hr style={{ border: "1px solid #ccc", margin: "20px 0" }} />
+
+          <div className="diet-plan-row">
+            {secondQuarter.map((plan, index) => (
+              <div key={index} className="diet-plan-item">
+                <a href={plan.link} target="_blank" rel="noopener noreferrer">
+                  <h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
+                </a>
+              </div>
+            ))}
+          </div>
+
+          <hr style={{ border: "1px solid #ccc", margin: "20px 0" }} />
+
+          <div className="diet-plan-row">
+            {thirdQuarter.map((plan, index) => (
+              <div key={index} className="diet-plan-item">
+                <a href={plan.link} target="_blank" rel="noopener noreferrer">
+                  <h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
+                </a>
+              </div>
+            ))}
+          </div>
+
+          <hr style={{ border: "1px solid #ccc", margin: "20px 0" }} />
+
+          <div className="diet-plan-row">
+            {fourthQuarter.map((plan, index) => (
+              <div key={index} className="diet-plan-item">
+                <a href={plan.link} target="_blank" rel="noopener noreferrer">
+                  <h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

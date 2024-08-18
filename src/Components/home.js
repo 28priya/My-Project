@@ -1,81 +1,80 @@
-// src/components/Home.js
-import React from 'react';
+import React, { useState } from 'react';
 import { FiArrowRight } from 'react-icons/fi';
+import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import Loading from './Loading'; // Import the Loading component
 import '../css/home.css';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  const scrollToSection = (sectionId) => {
-    const section = document.getElementById(sectionId);
-    if (!section) return;
-
-    const startY = window.pageYOffset;
-    const endY = section.getBoundingClientRect().top + startY;
-    const duration = 1000;
-
-    const startTime = performance.now();
-
-    const scroll = (currentTime) => {
-      const elapsedTime = currentTime - startTime;
-      const progress = Math.min(elapsedTime / duration, 1);
-
-      const newPos = startY + (endY - startY) * progress;
-      window.scrollTo(0, newPos);
-
-      if (progress < 1) {
-        requestAnimationFrame(scroll);
-      }
-    };
-
-    requestAnimationFrame(scroll);
-  };
+  
+  const [formValues, setFormValues] = useState({ name: '', email: '', message: '' });
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   const handleRecipeButtonClick = () => {
-    scrollToSection("featuresSection");
+    const section = document.getElementById("featuresSection");
+    if (!section) return;
+
+    section.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleCardClick = (path) => {
-    if (user) {
+    setIsLoading(true); // Start loading
+    setTimeout(() => {
       navigate(path);
-    } else {
-      navigate('/login');
+      setIsLoading(false); // Stop loading after navigation
+    }, 1000); // Simulate a delay
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formValues.name.trim()) {
+      errors.name = 'Name is required';
+    }
+    if (!formValues.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formValues.email)) {
+      errors.email = 'Email address is invalid';
+    }
+    if (!formValues.message.trim()) {
+      errors.message = 'Message is required';
+    }
+    return errors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const errors = validateForm();
+    setFormErrors(errors);
+    if (Object.keys(errors).length === 0) {
+      setIsSubmitting(true);
+      setIsLoading(true); // Start loading
+      // Handle form submission (e.g., send data to server)
+      console.log('Form submitted:', formValues);
+      setTimeout(() => {
+        // Reset form after submission
+        setFormValues({ name: '', email: '', message: '' });
+        setIsSubmitting(false);
+        setIsLoading(false); // Stop loading
+      }, 2000); // Simulate a delay for form submission
     }
   };
 
   return (
     <div className="home-container">
-   
-       <nav> 
-        <div className="navbar-right">
-          <button className="nav-button" onClick={() => navigate('/about')}>About</button>
-          <button className="nav-button" onClick={() => navigate('/contact')}>Contact</button>
-          {!user && (
-            <>
-              <button className="nav-button" onClick={() => navigate('/login')}>Login</button>
-              <button className="nav-button" onClick={() => navigate('/signup')}>Signup</button>
-            </>
-          )}
-          {user && (
-            <button className="nav-button" onClick={() => navigate('/profile')}>Profile</button>
-          )}
-        </div>
-      </nav>
-      <header className="home-banner-container">
-        <div className="home-text-section">
-          <h1 className="primary-heading">
-            Welcome to Tastebuddy
-          </h1>
-          <p className="primary-text">
-            Cooking is not just about making food. It's about creating a moment that lasts a lifetime.
-          </p>
-          <button className="secondary-button" onClick={handleRecipeButtonClick}>
-            Get Started <FiArrowRight />{" "}
-          </button>
-        </div>
+      {isLoading && <Loading />} {/* Show loading spinner when loading */}
+      <header className="home-banner">
+        <h1 className="primary-heading">Welcome to Tastebuddy</h1>
+        <button className="secondary-button" onClick={handleRecipeButtonClick}>
+          “Good food is the foundation of genuine happiness.” – Auguste Escoffier 
+        </button>
       </header>
       <main className="cards-container">
         <div className="card" onClick={() => handleCardClick('/diet-plans')}>
@@ -88,6 +87,78 @@ const Home = () => {
           <h2>Pantry</h2>
         </div>
       </main>
+      
+      <section className="about-section">
+        <h2>About Us</h2>
+        <p>
+          At Tastebuddy, we believe that good food is the essence of a good life. Our mission is to bring you the best recipes and diet plans that not only tantalize your taste buds but also nourish your body and soul. Whether you're exploring new cuisines, planning a balanced diet, or organizing your pantry, we are here to guide you every step of the way.
+        </p>
+        <p>
+          Good food is more than just fuel for your body; it's a way to connect with loved ones, explore cultures, and create lasting memories. Join us on this delicious journey and discover how you can enhance your life, one meal at a time.
+        </p>
+        <button className="primary-button" onClick={() => handleCardClick('/login')}>
+          Learn More <FiArrowRight />
+        </button>
+      </section>
+
+      {/* Contact Section */}
+      <section className="contact-section">
+        <h2>Contact Us</h2>
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <label>
+            Name:
+            <input 
+              type="text" 
+              name="name" 
+              value={formValues.name} 
+              onChange={handleInputChange} 
+              required 
+            />
+            {formErrors.name && <span className="error-message">{formErrors.name}</span>}
+          </label>
+          <label>
+            Email:
+            <input 
+              type="email" 
+              name="email" 
+              value={formValues.email} 
+              onChange={handleInputChange} 
+              required 
+            />
+            {formErrors.email && <span className="error-message">{formErrors.email}</span>}
+          </label>
+          <label>
+            Query:
+            <textarea 
+              name="message" 
+              rows="1" 
+              value={formValues.message} 
+              onChange={handleInputChange} 
+              required
+            ></textarea>
+            {formErrors.message && <span className="error-message">{formErrors.message}</span>}
+          </label>
+          <button type="submit" className="primary-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Sending...' : 'Send Message'} <FiArrowRight />
+          </button>
+        </form>
+      </section>
+      
+      <footer className="footer-section">
+        <p>&copy; {new Date().getFullYear()} Tastebuddy. All rights reserved.</p>
+        <p>Follow us on:</p>
+        <div className="social-icons">
+          <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+            <FaFacebook />
+          </a>
+          <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
+            <FaTwitter />
+          </a>
+          <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+            <FaInstagram />
+          </a>
+        </div>
+      </footer>
     </div>
   );
 };
